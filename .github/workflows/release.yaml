@@ -33,13 +33,13 @@ jobs:
           go-version: '^1.24'
           cache: true
 
-      - run: go build -ldflags="-s -w" -trimpath -o bigquery-emulator-${{ matrix.platform.target }} ./cmd/bigquery-emulator
+      - run: go build -ldflags="-s -w -X main.version=${{ github.ref_name }} -X main.revision=$(git rev-parse HEAD)" -trimpath -o bigquery-emulator ./cmd/bigquery-emulator
         env:
           CGO_ENABLED: 1
           CXX: clang++
 
-      - run: ./bigquery-emulator-${{ matrix.platform.target }} -h
-      - run: tar -czf bigquery-emulator-${{ matrix.platform.target }}.tar.gz bigquery-emulator-${{ matrix.platform.target }}
+      - run: ./bigquery-emulator -h
+      - run: tar czf bigquery-emulator-${{ matrix.platform.target }}.tar.gz bigquery-emulator
 
       - uses: softprops/action-gh-release@v2
         if: github.ref_type == 'tag'
